@@ -44,6 +44,7 @@ function createData(
 function validate(matrix) {
     let n = matrix.length;
     let new_data = [];
+    if (n == 0) return {"parsed": [], "isValid": false}
     for (let i = 0; i < n; i++)
     {
       new_data[i] = []; 
