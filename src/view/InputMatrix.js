@@ -13,7 +13,7 @@ function InputMatrix({data, setIJ, concepts}) {
     let current1 = "<не выбрано>";
     let current2 = "<не выбрано>";
 
-    if (selected != undefined) {
+    if (selected !== undefined) {
         current1 = `${concepts[selected[0]]}`;
         current2 = `${concepts[selected[1]]}`;
     }

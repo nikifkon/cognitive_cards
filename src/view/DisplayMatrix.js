@@ -1,6 +1,6 @@
  
 function DisplayMatrix({name, data, format}) {
-    if (data == undefined) {
+    if (data === undefined) {
         return (
             'Здесь будет таблица'
         )

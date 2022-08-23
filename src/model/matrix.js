@@ -66,7 +66,7 @@ class Matrix {
     }
 
     to_latex(format) {
-        if (format == undefined) {
+        if (format === undefined) {
             format = el => Number(el).toFixed(2);
         }
         let n = this.rows_count;
@@ -154,7 +154,7 @@ class Matrix {
                 steps += String.raw`
 &R^${i+1} = ${degree.to_latex()} \\
                 `;
-            } else if (i == 3) {
+            } else if (i === 3) {
                 steps += String.raw`
                 … \\
 `;
@@ -178,7 +178,7 @@ class Matrix {
             res = res.add(degree);
             i++;
         }
-        if (i == max_depth) {
+        if (i === max_depth) {
             steps += String.raw`
 &\text{Для точности 0.01 достаточно остановиться на 200 шаге}\\
             `;
@@ -232,7 +232,7 @@ class Matrix {
             for (let j = 1; j < n + 1; j++) {
                 let a = this.data[i-1][j-1][0];
                 let b = this.data[i-1][j-1][1];
-                if (a == 0 && b == 0) {
+                if (a === 0 && b === 0) {
                     data[i-1][j-1] = 0;
                 }
                 else {
@@ -263,7 +263,7 @@ class Matrix {
             for (let j = 1; j < n + 1; j++) {
                 let a = this.data[i-1][j-1][0];
                 let b = this.data[i-1][j-1][1];
-                if (a == 0 && b == 0) {
+                if (a === 0 && b === 0) {
                     data[i-1][j-1] = 1;
                 }
                 else {
