@@ -22,6 +22,9 @@ import { T_norm } from '../model/T-norm'
 
 import './MainTable.css'
 
+const DEFAULT_EPSILON = 0.01;
+const DEFAULT_LIMIT = 100;
+
 function createData(
     consept,
     cons_system_on_concept,
@@ -60,6 +63,12 @@ function MainTable({data, concept_list}) {
         let d = {}
         concept_list.forEach(concept => d[concept] = 0)
         return d
+    });
+    const [epsilon, setEpsilon] = useState(() => {
+        return DEFAULT_EPSILON;
+    })
+    const [limit, setLimit] = useState(() => {
+        return DEFAULT_LIMIT;
     })
 
     useEffect(() => {
@@ -120,22 +129,49 @@ function MainTable({data, concept_list}) {
         if (is_valid) {
             modeling_data.push(concepts);
             let t = 1
+            let breaking = false;
             let toStop = false;
-            while(!toStop &&  t < 10) {
+            let local_limit = limit;
+            let count_for_proof = 3;
+            while(t < local_limit) {
                 modeling_data[t+1] = {}
+                console.log("iter: ", t);
+                toStop = true;
                 for (let i = 0; i < n; i++) {
                     modeling_data[t+1][keys[i]] = modeling_data[t][keys[i]];
+                    let old = modeling_data[t][keys[i]];
                     for (let j = 0; j < n; j++) {
                         let delta = modeling_data[t][keys[j]]-modeling_data[t-1][keys[j]];
                         if (i === j) { continue; }
-                        if (Math.abs(delta) > 3) {
-                            toStop = true;
-                        }
                         // modeling_data[t+1][keys[i]] = S_norm(modeling_data[t+1][keys[i]], T_norm(modeling_data[t][keys[j]]-modeling_data[t-1][keys[j]], A.data[j][i]));
                         // modeling_data[t+1][keys[i]] = modeling_data[t+1][keys[i]] + T_norm(modeling_data[t][keys[j]]-modeling_data[t-1][keys[j]], A.data[j][i]);
                         // modeling_data[t+1][keys[i]] = modeling_data[t+1][keys[i]] + T_norm(modeling_data[t][keys[j]]-modeling_data[t-1][keys[j]], (modeling_data[t][keys[j]]-modeling_data[t-1][keys[j]]) >= 0 ? D.data[j][i][0] : -D.data[j][i][1]);
                         modeling_data[t+1][keys[i]] = modeling_data[t+1][keys[i]] + T_norm(delta, A.data[j][i]);
                     }
+                    let newValue = modeling_data[t+1][keys[i]];
+                    let grow = newValue/old;
+                    console.log(keys[i], grow, newValue);
+                    let isInfty = !isFinite(grow) && !isNaN(grow);
+                    let isGreatChange = Math.abs(1 - grow) > epsilon;
+                    if (!breaking && (isInfty || isGreatChange)) {
+                        console.log(grow)
+                        toStop = false;
+                    }
+                }
+                if (!breaking && toStop)
+                {
+                    if (count_for_proof <= 1) {
+                        console.log(t, "breaking");
+                        breaking = true;
+                        local_limit = t + 10;
+                    }
+                    else {
+                        count_for_proof -= 1;
+                        console.log('count_for_proof -= 1', count_for_proof, t)
+                    }
+                }
+                else {
+                    count_for_proof = 3;
                 }
                 t++;
             }
@@ -250,7 +286,7 @@ function MainTable({data, concept_list}) {
                                 placeholder={concepts[el]}
                                 onChange={(e) => {
                             let value = e.target.value;
-                            let new_value = parseFloat(value)
+                            let new_value = parseFloat(value);
                             if (isNaN(new_value)) 
                             {
                                 setConcepts({...concepts, [el]: 0})
@@ -262,9 +298,40 @@ function MainTable({data, concept_list}) {
                             <label>{el}</label>
                         </li>
                         )}
+                        <label>Продолжать пока относительное изменение для какого-то параметра больше, чем epsilon = </label>
+                        <input
+                            type="number"
+                            placeholder={epsilon}
+                            onChange={(e) => {
+                                let value = e.target.value;
+                                let new_value = parseFloat(value);
+                                if (isNaN(new_value)) {
+                                    setEpsilon(DEFAULT_EPSILON)
+                                }
+                                else {
+                                    setEpsilon(new_value);
+                                }
+                            }}
+                        />
+                        <br />
+                        <label>Но не более, чем limit операций = </label>
+                        <input
+                            type="number"
+                            placeholder={limit}
+                            onChange={(e) => {
+                                let value = e.target.value;
+                                let new_value = parseFloat(value);
+                                if (isNaN(new_value)) {
+                                    setLimit(DEFAULT_LIMIT)
+                                }
+                                else {
+                                    setLimit(new_value);
+                                }
+                            }}
+                        />
                     </ul>
-                    {is_valid ? <LineChart width={800} height={500} data={formated_data}>
-                        <XAxis dataKey="name" domain={[0, 'dataMax']} hide={true}/>
+                    {is_valid ? <LineChart width={800} height={800} data={formated_data}>
+                        <XAxis dataKey="name" domain={[0, 'dataMax']}/>
                         <YAxis domain={[-5, 5]}/>
                         <Tooltip position={ {x: 800, y: 0} }/>
                         <Legend />
