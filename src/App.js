@@ -50,7 +50,7 @@ function App() {
                             let n = concepts.length;
                             setData([...Array(n-1)].map(e => Array(n-1).fill(0)))
                         }}
-                    >удалить</a>
+                    > удалить</a>
                 </li>
                 )}
             </ul>

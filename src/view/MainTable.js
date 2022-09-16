@@ -78,6 +78,7 @@ function MainTable({data, concept_list}) {
     }, [concept_list])
 
     console.log(data, concept_list)
+    
     var {parsed, isValid} = validate(data);
     if (isValid) {
         // step 1
@@ -125,7 +126,9 @@ function MainTable({data, concept_list}) {
                 is_valid = false
             }
         }
-
+        
+        let min_value = -5;
+        let max_value = 5;
         if (is_valid) {
             modeling_data.push(concepts);
             let t = 1
@@ -149,8 +152,9 @@ function MainTable({data, concept_list}) {
                         modeling_data[t+1][keys[i]] = modeling_data[t+1][keys[i]] + T_norm(delta, A.data[j][i]);
                     }
                     let newValue = modeling_data[t+1][keys[i]];
+                    min_value = Math.min(min_value, newValue);
+                    max_value = Math.max(max_value, newValue);
                     let grow = newValue/old;
-                    console.log(keys[i], grow, newValue);
                     let isInfty = !isFinite(grow) && !isNaN(grow);
                     let isGreatChange = Math.abs(1 - grow) > epsilon;
                     if (!breaking && (isInfty || isGreatChange)) {
@@ -167,7 +171,6 @@ function MainTable({data, concept_list}) {
                     }
                     else {
                         count_for_proof -= 1;
-                        console.log('count_for_proof -= 1', count_for_proof, t)
                     }
                 }
                 else {
@@ -175,6 +178,7 @@ function MainTable({data, concept_list}) {
                 }
                 t++;
             }
+            console.log(min_value, max_value);
         }
         let formated_data = modeling_data.map((row, index) => {
             let rounded = {}
@@ -332,7 +336,7 @@ function MainTable({data, concept_list}) {
                     </ul>
                     {is_valid ? <LineChart width={800} height={800} data={formated_data}>
                         <XAxis dataKey="name" domain={[0, 'dataMax']}/>
-                        <YAxis domain={[-5, 5]}/>
+                        <YAxis domain={[-5, 5]} ticks={[...Array(10).keys()].map(x => Math.floor(min_value + x/10 * (max_value - min_value)))}/>
                         <Tooltip position={ {x: 800, y: 0} }/>
                         <Legend />
                         <ReferenceLine purpose='fake x axis' y={0} stroke='#666666' />
