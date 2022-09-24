@@ -341,7 +341,7 @@ function MainTable({data, concept_list}) {
                         <Legend />
                         <ReferenceLine purpose='fake x axis' y={0} stroke='#666666' />
                         {keys.map((el, index) => 
-                            <Line key={index} type="basic" dataKey={el} stroke={contrast_colors[index]}/>) }
+                            <Line key={index} type="basic" dot={false} dataKey={el} stroke={contrast_colors[index]}/>) }
                         </LineChart> : <p>Неправильный импульс</p>
                     }
                     </div>
