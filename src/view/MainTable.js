@@ -59,8 +59,8 @@ function validate(matrix) {
 
 function Label(props) {
     const { x, y, stroke, num, index, n } = props;
-    return (index == Math.floor(n/2)) ? (
-        <text x={x} y={y} dy={-2} fill={stroke} fontSize={14} textAnchor="middle">
+    return (index + num == Math.floor(n/2)) ? (
+        <text x={x} y={y} dy={-2} fill={stroke} fontSize={28} textAnchor="middle">
             {num}
         </text>
     ) : <></>;
