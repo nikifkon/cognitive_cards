@@ -7,7 +7,6 @@ function InputMatrix({data, setIJ, concepts}) {
 
     function onTestClick(event) {
         event.preventDefault();
-        console.log(event)
         document.querySelector('#main-form').reportValidity();
     }
     let current1 = "<не выбрано>";

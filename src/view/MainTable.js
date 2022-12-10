@@ -57,6 +57,15 @@ function validate(matrix) {
     return {"parsed": new_data, "isValid": true};
   }
 
+function Label(props) {
+    const { x, y, stroke, num, index, n } = props;
+    return (index == Math.floor(n/2)) ? (
+        <text x={x} y={y} dy={-2} fill={stroke} fontSize={14} textAnchor="middle">
+            {num}
+        </text>
+    ) : <></>;
+}
+
 function MainTable({data, concept_list}) {
     const n = concept_list.length;
     const [concepts, setConcepts] = useState(() => {
@@ -181,9 +190,10 @@ function MainTable({data, concept_list}) {
             console.log(min_value, max_value);
         }
         let formated_data = modeling_data.map((row, index) => {
+            console.log("---------------------------");
             let rounded = {}
-            Object.keys(row).forEach(key => {
-            rounded[key] = Number(row[key]).toFixed(2);
+            Object.keys(row).forEach((key, i) => {
+                rounded[i + 1 + '. ' + key] = Number(row[key]).toFixed(2);
             });
             return {"name": index.toString(), ...rounded}
         })
@@ -341,7 +351,7 @@ function MainTable({data, concept_list}) {
                         <Legend />
                         <ReferenceLine purpose='fake x axis' y={0} stroke='#666666' />
                         {keys.map((el, index) => 
-                            <Line key={index} type="basic" dot={false} dataKey={el} strokeWidth={3} stroke={contrast_colors[index]}/>) }
+                            <Line key={index} type="basic" dot={false} label={<Label num={index+1} n={formated_data.length}/>} dataKey={index+1+'. '+el} strokeWidth={3} stroke={'#000'}/>) }
                         </LineChart> : <p>Неправильный импульс</p>
                     }
                     </div>
